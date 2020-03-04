@@ -140,9 +140,6 @@ namespace brutezone
                 file.WriteLine($"static const time_t timezone_offset_max_time = {(StopTime - Epoch).Ticks / TimeSpan.TicksPerSecond};");
                 file.WriteLine("");
 
-                // The pointers dictionary associates a timezone string with a memory location for the array of UTC offset entries
-                var pointers = new Dictionary<string, string>();
-
                 foreach (var result in results.OrderBy(t => t.Key))
                 {
                     // Example format: 
@@ -163,17 +160,15 @@ namespace brutezone
                     file.WriteLine(string.Join(",\n", strList.ToArray()));
                     file.WriteLine("};");
                     file.WriteLine("");
-
-                    pointers.Add(result.Key, $"timezone_database_{result.Key.Replace('/', '_').Replace('-','_').ToLower()}");
                 }
 
                 // Write out the list of timezones and the associated memory locations
                 file.WriteLine("static const tzdb_timezone timezone_array[TIMEZONE_DATABASE_COUNT] = ");
                 file.WriteLine("{");
                 var tzlist = new List<string>();
-                foreach (var result in pointers.OrderBy(t => t.Key))
+                foreach (var result in results.OrderBy(t => t.Key))
                 {
-                    tzlist.Add($"\t{{\"{result.Key}\", {result.Value}}}");
+                    tzlist.Add($"\t{{\"{result.Key}\", timezone_database_{result.Key.Replace('/', '_').Replace('-','_').ToLower()}}}");
                 }
                 file.WriteLine(string.Join(",\n", tzlist.ToArray()));
                 file.WriteLine("};");
