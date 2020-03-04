@@ -143,31 +143,7 @@ namespace brutezone
                 // The pointers dictionary associates a timezone string with a memory location for the array of UTC offset entries
                 var pointers = new Dictionary<string, string>();
 
-                // Group all of the single timezones
-                var singleTimezones = results.Where(t => t.Value.Count == 1)
-                    .GroupBy(g => g.Value.First().Offset)
-                    .ToList();
-
-                // Record all of the single UTC offsets
-                file.WriteLine($"static const timezone_offset timezone_database_no_change[{singleTimezones.Count}] = ");
-                file.WriteLine("{");
-                int i = 0;
-                var singleStrings = new List<string>();
-                foreach(var singleZone in singleTimezones.OrderBy(g => g.First().Value.First().Offset))
-                {
-                    singleStrings.Add($"\t{{{(singleZone.First().Value.First().StartTime - Epoch).Ticks / TimeSpan.TicksPerSecond},{(singleZone.First().Value.First().EndTime - Epoch).Ticks / TimeSpan.TicksPerSecond},{singleZone.First().Value.First().Offset / 60}}}");
-                    foreach(var zone in singleZone)
-                    {
-                        pointers.Add(zone.Key, $"&timezone_database_no_change[{i}]");
-                    }
-                    i++;
-                }
-                file.WriteLine(string.Join(",\n", singleStrings.ToArray()));
-                file.WriteLine("};");
-                file.WriteLine("");
-
-                // Record all of the timezones with more than one UTC offset
-                foreach (var result in results.Where(t => t.Value.Count > 1).OrderBy(t => t.Key))
+                foreach (var result in results.OrderBy(t => t.Key))
                 {
                     // Example format: 
                     /*
