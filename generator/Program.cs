@@ -128,13 +128,13 @@ namespace brutezone
                 file.WriteLine("#ifndef TIMEZONE_DATABASE_H");
                 file.WriteLine("#define TIMEZONE_DATABASE_H");
                 file.WriteLine("");
-                file.WriteLine("#include <time.h>");
                 file.WriteLine("#include <string.h>");
+                file.WriteLine("#include <time.h>");
                 file.WriteLine("");
                 file.WriteLine($"#define TIMEZONE_DATABASE_COUNT {results.Count}");
                 file.WriteLine("");
-                file.WriteLine("typedef struct { const time_t start; const time_t end; const short offset; } timezone_offset;");
-                file.WriteLine("typedef struct { const char *name; const timezone_offset *entries; } tzdb_timezone;");
+                file.WriteLine("typedef struct { const time_t start; const short offset; } timezone_offset;");
+                file.WriteLine("typedef struct { const char *name; const timezone_offset *entries; size_t n_entries; } tzdb_timezone;");
                 file.WriteLine("");
                 file.WriteLine($"static const time_t timezone_offset_min_time = {(StartTime - Epoch).Ticks / TimeSpan.TicksPerSecond};");
                 file.WriteLine($"static const time_t timezone_offset_max_time = {(StopTime - Epoch).Ticks / TimeSpan.TicksPerSecond};");
@@ -155,7 +155,7 @@ namespace brutezone
                     var strList = new List<string>();
                     foreach(var entry in result.Value.OrderBy(e => e.StartTime))
                     {
-                        strList.Add($"\t{{{(entry.StartTime - Epoch).Ticks / TimeSpan.TicksPerSecond},{(entry.EndTime - Epoch).Ticks / TimeSpan.TicksPerSecond},{entry.Offset / 60}}}");
+                        strList.Add($"\t{{{(entry.StartTime - Epoch).Ticks / TimeSpan.TicksPerSecond},{entry.Offset / 60}}}");
                     }
                     file.WriteLine(string.Join(",\n", strList.ToArray()));
                     file.WriteLine("};");
@@ -168,7 +168,7 @@ namespace brutezone
                 var tzlist = new List<string>();
                 foreach (var result in results.OrderBy(t => t.Key))
                 {
-                    tzlist.Add($"\t{{\"{result.Key}\", timezone_database_{result.Key.Replace('/', '_').Replace('-','_').ToLower()}}}");
+                    tzlist.Add($"\t{{\"{result.Key}\", timezone_database_{result.Key.Replace('/', '_').Replace('-','_').ToLower()}, {result.Value.Count}}}");
                 }
                 file.WriteLine(string.Join(",\n", tzlist.ToArray()));
                 file.WriteLine("};");
