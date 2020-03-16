@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 
 	for (time_t t = timezone_offset_min_time; t < timezone_offset_max_time; t += STEP_WIDTH) {
 		const time_t localtime = timezone_local_time(timezone, t);
-		escape(&gmtime);
+		escape(&localtime);
 	}
 
 	rc = clock_gettime(CLOCK_MONOTONIC, &bm_end);
