@@ -7,7 +7,7 @@
 
 #define STEP_WIDTH 100
 
-int main(int argc, char **argv)
+int main(void)
 {
 	const char *timezone = "America/Los_Angeles";
 	struct timespec bm_start;
