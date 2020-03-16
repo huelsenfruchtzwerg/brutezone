@@ -15,6 +15,8 @@ else()
 
     include_directories ("${PROJECT_SOURCE_DIR}/inc")
 
+    add_compile_options(-Werror -Wall -Wextra)
+
     add_library(${PROJECT_NAME}
         src/timezone.c
         src/timezone_impl.c
